@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Hadi VPN - اشتراک شما</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<!-- FontAwesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Vazirmatn Font -->
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+<!-- JetBrains Mono -->
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- QRCode.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+    :root, html{
+        --gold-1:#fbe8a6;
+        --gold-2:#f0c869;
+        --gold-3:#d4af37;
+        --gold-4:#a5791f;
+        --bg-0:#000000;
+        --bg-1:#0a0a0c;
+        --card-bg: rgba(20,20,23,0.72);
+        --card-border: rgba(212,175,55,0.22);
+        --text-1:#f5f1e6;
+        --text-2:#c7c2b3;
+        --text-muted:#8b8880;
+    }
+    html.light{
+        --bg-0:#f4ecd8;
+        --bg-1:#fffaf0;
+        --card-bg: rgba(255,255,255,0.72);
+        --card-border: rgba(165,121,31,0.28);
+        --text-1:#201c12;
+        --text-2:#463f2e;
+        --text-muted:#7a715c;
+    }
+    *{ -webkit-tap-highlight-color: transparent; box-sizing:border-box; }
+    html,body{ height:100%; }
+    body {
+        font-family: 'Vazirmatn', sans-serif;
+        background:
+            radial-gradient(ellipse 70% 45% at 50% -10%, rgba(212,175,55,0.14), transparent),
+            linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-0) 100%);
+        min-height: 100vh;
+        overflow-x: hidden;
+        transition: background .4s ease;
+    }
+    .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .text-primary{ color: var(--text-1); }
+    .text-secondary{ color: var(--text-2); }
+    .text-muted{ color: var(--text-muted); }
+
+    /* ---------- Animated background ---------- */
+    .bg-fx{ position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .bg-grid{
+        position:absolute; inset:-2px;
+        background-image:
+            linear-gradient(rgba(212,175,55,0.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(212,175,55,0.045) 1px, transparent 1px);
+        background-size: 42px 42px;
+        mask-image: radial-gradient(ellipse 70% 55% at 50% 15%, black, transparent 75%);
+    }
+    .orb{ position:absolute; border-radius:50%; filter: blur(80px); opacity:0.35; animation: floatBlob 18s ease-in-out infinite; }
+    .orb-1{ width:280px; height:280px; top:-80px; right:-60px; background: radial-gradient(circle, rgba(212,175,55,0.55), transparent 70%); }
+    .orb-2{ width:320px; height:320px; bottom:0%; left:-100px; background: radial-gradient(circle, rgba(165,121,31,0.45), transparent 70%); animation-delay:-7s; }
+    html.light .orb{ opacity:.18; }
+    html.light .bg-grid{ opacity:.5; }
+
+    .corner-ray{ position:absolute; top:-30px; width:360px; height:2px; background:linear-gradient(90deg, transparent, var(--gold-3), transparent); filter:blur(1px); opacity:.55; }
+    .corner-ray-left{ left:-80px; transform: rotate(35deg); transform-origin: left top; }
+    .corner-ray-right{ right:-80px; transform: rotate(-35deg); transform-origin: right top; }
+
+    @keyframes floatBlob{
+        0%,100%{ transform: translate(0,0) scale(1); }
+        33%{ transform: translate(20px,-24px) scale(1.06); }
+        66%{ transform: translate(-16px,14px) scale(0.95); }
+    }
+    @keyframes fadeInUp{ from{ opacity:0; transform: translateY(14px);} to{ opacity:1; transform: translateY(0);} }
+    @keyframes glowPulse{ 0%,100%{ box-shadow: 0 0 18px 1px rgba(212,175,55,0.30);} 50%{ box-shadow: 0 0 30px 6px rgba(212,175,55,0.50);} }
+    @keyframes shimmer{ 0%{ background-position: 200% 0;} 100%{ background-position: -200% 0;} }
+    .reveal{ animation: fadeInUp .55s cubic-bezier(.21,.9,.32,1) both; }
+
+    /* ---------- Glass card ---------- */
+    .glass-card {
+        position: relative;
+        background: var(--card-bg);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid var(--card-border);
+        box-shadow: 0 10px 30px -14px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.03);
+        transition: border-color .3s ease, transform .3s ease;
+    }
+    .glass-card:hover{ border-color: rgba(212,175,55,0.45); }
+    .card-top-line{
+        position:absolute; top:0; left:12px; right:12px; height:2px;
+        background: linear-gradient(90deg, transparent, var(--gold-3), var(--gold-1), var(--gold-3), transparent);
+        background-size: 200% 100%; animation: shimmer 5s linear infinite;
+        border-radius: 999px;
+    }
+
+    /* ---------- Logo ---------- */
+    .logo-mark{ width:88px; height:100px; position:relative; margin:0 auto; }
+    .shield-shape{
+        width:100%; height:86px; margin-top:14px;
+        background: linear-gradient(145deg, var(--gold-1), var(--gold-3) 60%, var(--gold-4));
+        clip-path: polygon(50% 0%, 100% 16%, 100% 56%, 50% 100%, 0% 56%, 0% 16%);
+        display:flex; align-items:center; justify-content:center;
+        box-shadow: 0 0 0 1px rgba(212,175,55,.5), 0 14px 34px -10px rgba(212,175,55,.65);
+        animation: glowPulse 3.4s ease-in-out infinite;
+    }
+    .shield-letter{ font-weight:900; font-size:2.1rem; color:#0a0a0a; line-height:1; }
+    .crown-icon{ position:absolute; top:-6px; left:50%; transform:translateX(-50%); color:var(--gold-1); font-size:1.35rem; filter: drop-shadow(0 2px 6px rgba(212,175,55,.6)); }
+    .brand-title{ font-weight:800; letter-spacing:.5px; font-size:1.9rem; color:var(--text-1); }
+    .brand-title .gold-text{ background: linear-gradient(90deg, var(--gold-1), var(--gold-2), var(--gold-3)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+    /* ---------- Buttons ---------- */
+    .btn-gold{ background: linear-gradient(135deg, var(--gold-1), var(--gold-2) 50%, var(--gold-3)); color:#0a0a0a; font-weight:700; box-shadow: 0 8px 22px -8px rgba(212,175,55,0.6); transition: all .25s ease; }
+    .btn-gold:hover{ transform: translateY(-1px); box-shadow: 0 12px 26px -8px rgba(212,175,55,0.8); filter:brightness(1.05); }
+    .btn-outline-gold{ background: rgba(212,175,55,0.06); border:1px solid rgba(212,175,55,0.35); color: var(--gold-2); transition: all .25s ease; }
+    .btn-outline-gold:hover{ background: rgba(212,175,55,0.16); border-color: rgba(212,175,55,0.6); }
+    .icon-pill{ background: rgba(212,175,55,0.06); border:1px solid rgba(212,175,55,0.25); color: var(--text-2); transition:.2s; }
+    .icon-pill:hover{ background: rgba(212,175,55,0.14); border-color: rgba(212,175,55,0.5); color: var(--gold-1); }
+
+    /* ---------- Stat cards ---------- */
+    #progressWrap.hidden{ display:none; }
+    .stat-card{ border-radius: 18px; padding: 16px; }
+    .stat-icon{ width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; background: rgba(212,175,55,0.12); color: var(--gold-2); }
+    #statusBadge[data-status="loading"] .stat-icon{ background: rgba(148,163,184,.14); color:#94a3b8; }
+    #statusBadge[data-status="loading"] #statusBadgeText{ color:#94a3b8; }
+    #statusBadge[data-status="active"] .stat-icon{ background: rgba(52,211,153,.14); color:#34d399; }
+    #statusBadge[data-status="active"] #statusBadgeText{ color:#34d399; }
+    #statusBadge[data-status="error"] .stat-icon{ background: rgba(251,113,133,.14); color:#fb7185; }
+    #statusBadge[data-status="error"] #statusBadgeText{ color:#fb7185; }
+
+    /* ---------- Progress bar ---------- */
+    .progress-track{ height:12px; border-radius:999px; background: rgba(0,0,0,0.35); border:1px solid var(--card-border); overflow:hidden; }
+    html.light .progress-track{ background: rgba(0,0,0,0.08); }
+    .percent-pill{
+        position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+        background: var(--bg-1); border:1px solid rgba(212,175,55,.55); color: var(--gold-2);
+        font-size:11px; font-weight:700; padding:2px 12px; border-radius:999px; white-space:nowrap;
+        box-shadow: 0 4px 14px -4px rgba(212,175,55,.5);
+    }
+
+    /* ---------- Config rows ---------- */
+    #list{ display:flex; flex-direction:column; gap:10px; }
+    .config-row{ border-radius:14px; padding:10px 14px; display:flex; align-items:center; gap:12px; transition: transform .2s ease, border-color .2s ease; }
+    .config-row:hover{ transform: translateY(-1px); }
+    .proto-chip{ font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; padding:7px 10px; border-radius:10px; border:1px solid; white-space:nowrap; flex-shrink:0; min-width:96px; text-align:center; }
+
+    /* ---------- QR ---------- */
+    .qr-frame{ padding:16px; background:#fff; border-radius:18px; box-shadow: 0 0 0 1px rgba(212,175,55,0.55), 0 12px 30px -10px rgba(212,175,55,0.45); display:inline-flex; }
+
+    /* ---------- Dropdowns ---------- */
+    .dropdown-menu{ position:absolute; top:calc(100% + 8px); min-width:150px; border-radius:14px; overflow:hidden; z-index:40; display:none; }
+    .dropdown-menu.open{ display:block; animation: fadeInUp .18s ease both; }
+    .dropdown-item{ padding:10px 14px; font-size:12px; display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--text-2); transition:.15s; }
+    .dropdown-item:hover{ background: rgba(212,175,55,0.12); color: var(--gold-2); }
+
+    #list::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.35); border-radius: 10px; }
+    ::-webkit-scrollbar-track{ background: transparent; }
+</style>
+</head>
+<body class="text-slate-200 min-h-screen">
+
+<!-- Animated background -->
+<div class="bg-fx" aria-hidden="true">
+    <div class="bg-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+</div>
+
+<div class="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-10 space-y-6 overflow-hidden">
+    <div class="corner-ray corner-ray-left" aria-hidden="true"></div>
+    <div class="corner-ray corner-ray-right" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <div class="relative flex items-start justify-between reveal">
+        <!-- Language dropdown -->
+        <div class="relative">
+            <button id="langBtn" class="icon-pill flex items-center gap-2 px-3 py-2 rounded-full text-xs">
+                <i class="fas fa-globe"></i><span>فارسی</span><i class="fas fa-chevron-down text-[10px]"></i>
+            </button>
+            <div id="langMenu" class="dropdown-menu glass-card">
+                <div class="dropdown-item" data-lang="fa"><i class="fas fa-check text-[10px]"></i>فارسی</div>
+                <div class="dropdown-item" data-lang="en"><i class="fas fa-language text-[10px]"></i>English</div>
+            </div>
+        </div>
+
+        <!-- Brand -->
+        <div class="flex-1 flex flex-col items-center text-center px-2">
+            <div class="logo-mark">
+                <i class="fas fa-crown crown-icon"></i>
+                <div class="shield-shape"><span class="shield-letter">H</span></div>
+            </div>
+            <h1 class="brand-title mt-2">HADI<span class="gold-text"> VPN</span></h1>
+            <p class="text-[11px] sm:text-xs text-muted mt-1">اتصال امن، پرسرعت و بدون محدودیت</p>
+            <span id="userTitle" class="hidden sm:inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full text-[11px] icon-pill">اکانت کاربر محترم</span>
+        </div>
+
+        <!-- Theme dropdown -->
+        <div class="relative">
+            <button id="themeBtn" class="icon-pill flex items-center gap-2 px-3 py-2 rounded-full text-xs">
+                <i class="fas fa-moon" id="themeIcon"></i><span id="themeLabel">حالت تاریک</span><i class="fas fa-chevron-down text-[10px]"></i>
+            </button>
+            <div id="themeMenu" class="dropdown-menu glass-card" style="left:0;">
+                <div class="dropdown-item" data-theme="dark"><i class="fas fa-moon text-[10px]"></i>حالت تاریک</div>
+                <div class="dropdown-item" data-theme="light"><i class="fas fa-sun text-[10px]"></i>حالت روشن</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 reveal" style="animation-delay:.05s">
+
+        <!-- Expiration -->
+        <div class="stat-card glass-card">
+            <div class="card-top-line"></div>
+            <div class="flex items-center gap-2 mb-3">
+                <div class="stat-icon"><i class="fas fa-calendar-days"></i></div>
+                <span class="text-[11px] text-muted">تاریخ انقضا</span>
+            </div>
+            <div class="text-base font-bold text-primary mono" id="renewDate">-</div>
+            <div class="text-[10px] text-muted mt-1" id="renewSub">-</div>
+        </div>
+
+        <!-- Days left -->
+        <div class="stat-card glass-card">
+            <div class="card-top-line"></div>
+            <div class="flex items-center gap-2 mb-3">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <span class="text-[11px] text-muted">روزهای باقی‌مانده</span>
+            </div>
+            <div class="text-base font-bold text-primary mono" id="daysLeft">-</div>
+            <div class="text-[10px] text-muted mt-1">روز</div>
+        </div>
+
+        <!-- Total volume -->
+        <div class="stat-card glass-card">
+            <div class="card-top-line"></div>
+            <div class="flex items-center gap-2 mb-3">
+                <div class="stat-icon"><i class="fas fa-database"></i></div>
+                <span class="text-[11px] text-muted">حجم کل</span>
+            </div>
+            <div class="text-base font-bold text-primary mono" id="totalVolume">-</div>
+            <div class="text-[10px] text-muted mt-1">گیگابایت</div>
+        </div>
+
+        <!-- Used volume -->
+        <div class="stat-card glass-card">
+            <div class="card-top-line"></div>
+            <div class="flex items-center gap-2 mb-3">
+                <div class="stat-icon"><i class="fas fa-arrow-trend-up"></i></div>
+                <span class="text-[11px] text-muted">حجم مصرف شده</span>
+            </div>
+            <div class="text-base font-bold text-primary mono" id="usedVolume">-</div>
+            <div class="text-[10px] text-muted mt-1" id="usedPercentCard">-</div>
+        </div>
+
+        <!-- Status -->
+        <div class="stat-card glass-card" id="statusBadge" data-status="loading">
+            <div class="card-top-line"></div>
+            <div class="flex items-center gap-2 mb-3">
+                <div class="stat-icon"><i class="fas fa-shield-halved"></i></div>
+                <span class="text-[11px] text-muted">وضعیت اشتراک</span>
+            </div>
+            <div class="text-base font-bold mono" id="statusBadgeText">در حال بررسی</div>
+            <div class="text-[10px] text-muted mt-1" id="statusMsg">در حال دریافت اطلاعات...</div>
+        </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div id="progressWrap" class="hidden glass-card rounded-2xl p-5 reveal" style="animation-delay:.08s">
+        <div class="card-top-line"></div>
+        <div class="flex items-center justify-between text-xs text-muted mb-3">
+            <span><span class="text-primary font-semibold mono" id="usedVolumeBarText">-</span> مصرف شده</span>
+            <span><span class="text-primary font-semibold mono" id="totalVolumeBarText">-</span> کل حجم</span>
+        </div>
+        <div class="relative">
+            <div class="progress-track">
+                <div class="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-[#fbe8a6] to-[#d4af37]" id="usageFill" style="width:0%"></div>
+            </div>
+            <span class="percent-pill" id="usedPercentPill">0%</span>
+        </div>
+    </div>
+
+    <!-- Main two column -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5">
+
+        <!-- Config list -->
+        <div id="listWrap" class="hidden glass-card rounded-3xl p-5 sm:p-6 reveal" style="animation-delay:.12s">
+            <div class="card-top-line"></div>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm font-bold text-primary flex items-center gap-2"><i class="fas fa-link" style="color:var(--gold-2)"></i>کانفیگ‌های اشتراک <span class="mono text-muted" id="countBadge">(0)</span></h2>
+            </div>
+            <div id="list"></div>
+
+            <div class="grid grid-cols-2 gap-3 mt-5">
+                <button id="copyAllBtn" class="btn-outline-gold text-xs px-4 py-2.5 rounded-xl flex items-center justify-center gap-2">
+                    <i class="fas fa-copy"></i>کپی همه لینک‌ها
+                </button>
+                <button id="importAllBtn" class="btn-gold text-xs px-4 py-2.5 rounded-xl flex items-center justify-center gap-2">
+                    <i class="fas fa-file-import"></i>ایمپورت همه در کلاینت‌ها
+                </button>
+            </div>
+            <p class="text-[11px] text-muted text-center mt-4">
+                <i class="fas fa-bolt ml-1" style="color:var(--gold-2)"></i>
+                برای اتصال، کافیست یکی از لینک‌های بالا را کپی کرده و در نرم‌افزار خود وارد کنید.
+            </p>
+        </div>
+
+        <p class="text-center text-xs text-muted hidden glass-card rounded-2xl p-6" id="emptyMsg">
+            <i class="fas fa-circle-exclamation ml-1" style="color:var(--gold-3)"></i>
+            کانفیگی پیدا نشد. لینک اشتراک یا محتوا رو بررسی کن.
+        </p>
+
+        <!-- QR card -->
+        <div class="glass-card rounded-3xl p-5 sm:p-6 flex flex-col items-center text-center reveal" style="animation-delay:.16s">
+            <div class="card-top-line"></div>
+            <h2 class="text-sm font-bold text-primary flex items-center gap-2 mb-4"><i class="fas fa-qrcode" style="color:var(--gold-2)"></i>اسکن QR Code</h2>
+            <div class="qr-frame" id="qrCanvas"></div>
+            <p class="text-[11px] text-muted mt-4">برای اتصال سریع، کد QR را اسکن کنید.</p>
+            <button id="downloadQrBtn" class="btn-gold w-full mt-4 text-xs px-4 py-2.5 rounded-xl flex items-center justify-center gap-2">
+                <i class="fas fa-download"></i>دانلود QR Code
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="glass-card rounded-2xl px-4 py-5 reveal" style="animation-delay:.2s">
+        <div class="card-top-line"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-2 divide-y sm:divide-y-0 sm:divide-x sm:divide-x-reverse divide-[color:var(--card-border)]">
+            <div class="flex items-center gap-3 justify-center sm:justify-start pb-4 sm:pb-0">
+                <div class="stat-icon"><i class="fas fa-shield-halved"></i></div>
+                <div class="text-right">
+                    <div class="text-xs font-semibold text-primary">امنیت شما، اولویت ماست</div>
+                    <div class="text-[10px] text-muted mt-0.5">اتصال امن با بالاترین سطح رمزگذاری</div>
+                </div>
+            </div>
+            <div class="flex flex-col items-center justify-center gap-1 py-4 sm:py-0">
+                <span class="brand-title text-sm">HADI<span class="gold-text"> VPN</span></span>
+                <span class="text-[10px] text-muted">Powered by 3x-ui <i class="fas fa-heart" style="color:var(--gold-2)"></i></span>
+            </div>
+            <a href="https://t.me/x4g_group" class="flex items-center gap-3 justify-center sm:justify-end pt-4 sm:pt-0">
+                <div class="text-left">
+                    <div class="text-xs font-semibold text-primary">پشتیبانی ۲۴/۷</div>
+                    <div class="text-[10px] text-muted mt-0.5">در کنار شما هستیم</div>
+                </div>
+                <div class="stat-icon"><i class="fas fa-headset"></i></div>
+            </a>
+        </div>
+    </div>
+
+    <p class="text-center text-[10px] text-muted">© 2024 Hadi VPN - تمامی حقوق محفوظ است.</p>
+</div>
+
+<script>
+// ---------- element refs ----------
+const userTitle        = document.getElementById('userTitle');
+const statusMsg         = document.getElementById('statusMsg');
+const statusBadge       = document.getElementById('statusBadge');
+const statusBadgeText   = document.getElementById('statusBadgeText');
+const progressWrap      = document.getElementById('progressWrap');
+const usageFill         = document.getElementById('usageFill');
+const renewDate         = document.getElementById('renewDate');
+const renewSub          = document.getElementById('renewSub');
+const daysLeft          = document.getElementById('daysLeft');
+const totalVolume       = document.getElementById('totalVolume');
+const usedVolume        = document.getElementById('usedVolume');
+const usedPercentCard   = document.getElementById('usedPercentCard');
+const usedVolumeBarText = document.getElementById('usedVolumeBarText');
+const totalVolumeBarText= document.getElementById('totalVolumeBarText');
+const usedPercentPill   = document.getElementById('usedPercentPill');
+const listWrap          = document.getElementById('listWrap');
+const listEl            = document.getElementById('list');
+const countBadge        = document.getElementById('countBadge');
+const emptyMsg          = document.getElementById('emptyMsg');
+const copyAllBtn        = document.getElementById('copyAllBtn');
+const importAllBtn      = document.getElementById('importAllBtn');
+const qrCanvasEl        = document.getElementById('qrCanvas');
+const downloadQrBtn     = document.getElementById('downloadQrBtn');
+
+// ---------- helpers ----------
+function toast(text){
+    const el = document.createElement('div');
+    el.className = "fixed bottom-5 left-1/2 -translate-x-1/2 font-bold px-4 py-2.5 rounded-xl shadow-lg text-xs z-50";
+    el.style.background = "linear-gradient(135deg, #fbe8a6, #d4af37)";
+    el.style.color = "#0a0a0a";
+    el.style.boxShadow = "0 10px 25px -8px rgba(212,175,55,0.7)";
+    el.innerHTML = '<i class="fas fa-check-circle ml-1.5"></i> ' + text;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1800);
+}
+
+function setBadge(state, text){
+    statusBadge.dataset.status = state;
+    statusBadgeText.textContent = text;
+}
+function setStatus(text){ statusMsg.textContent = text; }
+
+function b64decode(str){
+    str = str.trim().replace(/-/g,'+').replace(/_/g,'/');
+    while(str.length % 4) str += '=';
+    try{ return decodeURIComponent(escape(atob(str))); }
+    catch(e){ try{ return atob(str); }catch(e2){ return ''; } }
+}
+
+function fmtBytes(bytes){
+    if(!isFinite(bytes) || bytes < 0) return '-';
+    const units = ['B','KB','MB','GB','TB'];
+    let i = 0, v = bytes;
+    while(v >= 1024 && i < units.length-1){ v /= 1024; i++; }
+    return v.toFixed(v >= 10 ? 0 : 1) + ' ' + units[i];
+}
+
+const persianDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+function toFa(n){ return String(n).replace(/[0-9]/g, d => persianDigits[d]); }
+
+// Gregorian -> Jalali (public-domain algorithm)
+function toJalali(gy, gm, gd){
+    const g_d_m = [0,31,59,90,120,151,181,212,243,273,304,334];
+    let jy;
+    if (gy<=1600) { jy=0; gy-=621; } else { jy=979; gy-=1600; }
+    const gy2 = (gm>2)? (gy+1) : gy;
+    let days = (365*gy) + Math.floor((gy2+3)/4) - Math.floor((gy2+99)/100) + Math.floor((gy2+399)/400) - 80 + gd + g_d_m[gm-1];
+    jy += 33*Math.floor(days/12053);
+    days %= 12053;
+    jy += 4*Math.floor(days/1461);
+    days %= 1461;
+    if (days > 365) { jy += Math.floor((days-1)/365); days = (days-1)%365; }
+    const jm = (days < 186) ? 1 + Math.floor(days/31) : 7 + Math.floor((days-186)/30);
+    const jd = 1 + ((days<186) ? (days%31) : ((days-186)%30));
+    return [jy, jm, jd];
+}
+function fmtJalaliDate(unixSeconds){
+    const d = new Date(unixSeconds*1000);
+    const [jy,jm,jd] = toJalali(d.getFullYear(), d.getMonth()+1, d.getDate());
+    return toFa(`${jy}/${String(jm).padStart(2,'0')}/${String(jd).padStart(2,'0')}`);
+}
+
+// ---------- usage / expiry ----------
+function renderUsageInfo(headerStr){
+    if(!headerStr){
+        progressWrap.classList.add('hidden');
+        renewDate.textContent = '-'; renewSub.textContent = '-';
+        daysLeft.textContent = '-';
+        totalVolume.textContent = '-'; usedVolume.textContent = '-'; usedPercentCard.textContent = '-';
+        return;
+    }
+    const parts = {};
+    headerStr.split(';').forEach(p => {
+        const [k,v] = p.trim().split('=');
+        if(k && v !== undefined) parts[k.trim()] = parseInt(v.trim(), 10);
+    });
+    const used = (parts.upload || 0) + (parts.download || 0);
+    const total = parts.total || 0;
+    const expire = parts.expire || 0;
+
+    progressWrap.classList.remove('hidden');
+
+    if(total > 0){
+        const pct = Math.min(100, (used/total)*100);
+        const pctText = pct.toFixed(1) + '%';
+        usageFill.style.width = pct + '%';
+        usageFill.className = 'h-full rounded-full transition-all duration-700 bg-gradient-to-r ' +
+            (pct > 90 ? 'from-rose-500 to-rose-700' : pct > 70 ? 'from-amber-400 to-amber-600' : 'from-[#fbe8a6] to-[#d4af37]');
+        totalVolume.textContent = fmtBytes(total);
+        usedVolume.textContent = fmtBytes(used);
+        usedPercentCard.textContent = pctText;
+        usedVolumeBarText.textContent = fmtBytes(used);
+        totalVolumeBarText.textContent = fmtBytes(total);
+        usedPercentPill.textContent = pctText;
+    } else if (used > 0){
+        usageFill.style.width = '100%';
+        usageFill.className = 'h-full rounded-full transition-all duration-700 bg-gradient-to-r from-[#fbe8a6] to-[#d4af37]';
+        totalVolume.textContent = 'نامحدود';
+        usedVolume.textContent = fmtBytes(used);
+        usedPercentCard.textContent = 'نامحدود';
+        usedVolumeBarText.textContent = fmtBytes(used);
+        totalVolumeBarText.textContent = 'نامحدود';
+        usedPercentPill.textContent = '—';
+    } else {
+        usageFill.style.width = '0%';
+        totalVolume.textContent = 'نامحدود';
+        usedVolume.textContent = 'بدون مصرف';
+        usedPercentCard.textContent = '-';
+        usedVolumeBarText.textContent = '0 B';
+        totalVolumeBarText.textContent = 'نامحدود';
+        usedPercentPill.textContent = '0%';
+    }
+
+    if(expire > 0){
+        const now = Math.floor(Date.now()/1000);
+        const days = Math.max(0, Math.ceil((expire - now) / 86400));
+        const daysFa = toFa(days);
+        daysLeft.textContent = daysFa;
+        renewDate.textContent = fmtJalaliDate(expire);
+        renewSub.textContent = '(' + daysFa + ' روز دیگر)';
+    } else {
+        daysLeft.textContent = '∞';
+        renewDate.textContent = 'نامحدود';
+        renewSub.textContent = 'بدون انقضا';
+    }
+}
+
+// ---------- protocol parsing ----------
+function detectProto(uri){
+    if(uri.startsWith('vless://'))   return {key:'vless', label:'VLESS', icon:'fa-bolt', color:'#f0c869'};
+    if(uri.startsWith('vmess://'))   return {key:'vmess', label:'VMESS', icon:'fa-shuffle', color:'#c084fc'};
+    if(uri.startsWith('trojan://')) return {key:'trojan', label:'TROJAN', icon:'fa-mask', color:'#f472b6'};
+    if(uri.startsWith('ssr://'))     return {key:'ssr', label:'SSR', icon:'fa-key', color:'#fb923c'};
+    if(uri.startsWith('ss://'))      return {key:'ss', label:'SS', icon:'fa-lock', color:'#38bdf8'};
+    if(uri.startsWith('hysteria2://') || uri.startsWith('hy2://')) return {key:'hy2', label:'HYSTERIA2', icon:'fa-cloud', color:'#34d399'};
+    if(uri.startsWith('tuic://'))    return {key:'tuic', label:'TUIC', icon:'fa-satellite-dish', color:'#fbbf24'};
+    return {key:'other', label:'UNKNOWN', icon:'fa-link', color:'#94a3b8'};
+}
+
+function parseEntry(uri){
+    const proto = detectProto(uri);
+    let name = proto.label;
+    let subtitle = '';
+    try{
+        if(proto.key === 'vmess'){
+            const json = JSON.parse(b64decode(uri.replace('vmess://','')));
+            name = json.ps || proto.label;
+            subtitle = `${json.add || '-'}:${json.port || '-'} · ${json.net || 'tcp'}`;
+        } else if(proto.key === 'ssr'){
+            const decoded = b64decode(uri.replace('ssr://',''));
+            const [hostPortPart, paramsPartRaw] = decoded.split('/?');
+            const segs = (hostPortPart || '').split(':');
+            subtitle = `${segs[0] || '-'}:${segs[1] || '-'} · ssr`;
+            const qs = new URLSearchParams(paramsPartRaw || '');
+            const remarksB64 = qs.get('remarks');
+            if(remarksB64){ const r = b64decode(remarksB64); if(r) name = r; }
+        } else {
+            const hashIdx = uri.indexOf('#');
+            if(hashIdx > -1) name = decodeURIComponent(uri.slice(hashIdx+1)) || proto.label;
+            const body = uri.split('://')[1] || '';
+            const beforeHash = body.split('#')[0];
+            const [userAndHost, queryStr] = beforeHash.split('?');
+            const afterAt = userAndHost.includes('@') ? userAndHost.split('@')[1] : userAndHost;
+            const [host, port] = afterAt.split(':');
+            const qs = new URLSearchParams(queryStr || '');
+            subtitle = `${host || '-'}:${port || '-'} · ${qs.get('type') || 'tcp'}`;
+        }
+    }catch(e){}
+    return {uri, proto, name, subtitle};
+}
+
+// ---------- render ----------
+function renderEntries(rawText){
+    listEl.innerHTML = '';
+    const lines = rawText.split(/\r?\n/).map(l=>l.trim()).filter(l=>/^[a-z0-9]+:\/\//i.test(l));
+
+    if(lines.length === 0){
+        listWrap.classList.add('hidden');
+        emptyMsg.classList.remove('hidden');
+        setBadge('error', 'کانفیگی یافت نشد');
+        return;
+    }
+
+    emptyMsg.classList.add('hidden');
+    listWrap.classList.remove('hidden');
+    setStatus('اطلاعات اشتراک با موفقیت دریافت شد.');
+    setBadge('active', 'فعال');
+
+    const entries = lines.map(parseEntry);
+    countBadge.textContent = `(${toFa(entries.length)})`;
+
+    if(entries.length && entries[0].name){
+        userTitle.textContent = entries[0].name;
+    }
+
+    entries.forEach((entry) => {
+        const row = document.createElement('div');
+        row.className = 'config-row glass-card';
+        row.innerHTML = `
+            <span class="proto-chip" style="color:${entry.proto.color};border-color:${entry.proto.color}55;background:${entry.proto.color}14">
+                <i class="fas ${entry.proto.icon} ml-1"></i>${entry.proto.label}
+            </span>
+            <span class="flex-1 min-w-0 text-xs mono text-secondary truncate" dir="ltr" title="${entry.uri.replace(/"/g,'&quot;')}">${entry.uri}</span>
+            <button class="copy-one btn-outline-gold text-[11px] px-3 py-1.5 rounded-lg flex items-center gap-1.5 flex-shrink-0">
+                <i class="fas fa-copy"></i>کپی
+            </button>
+        `;
+        listEl.appendChild(row);
+
+        row.querySelector('.copy-one').addEventListener('click', () => {
+            navigator.clipboard.writeText(entry.uri).then(() => toast('لینک کپی شد'));
+        });
+    });
+}
+
+function renderQRCode(url){
+    qrCanvasEl.innerHTML = '';
+    if(!url) return;
+    new QRCode(qrCanvasEl, {text: url, width: 190, height: 190, colorDark:'#0B0E13', colorLight:'#ffffff'});
+}
+
+copyAllBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(window.__rawSub || '').then(() => toast('همه‌ی کانفیگ‌ها کپی شد'));
+});
+
+importAllBtn.addEventListener('click', () => {
+    const url = window.__subUrl || '';
+    navigator.clipboard.writeText(url).then(() => toast('لینک اشتراک کپی شد؛ در کلاینت خود Import کنید'));
+});
+
+downloadQrBtn.addEventListener('click', () => {
+    const canvas = qrCanvasEl.querySelector('canvas');
+    if(!canvas){ toast('کد QR هنوز آماده نیست'); return; }
+    const link = document.createElement('a');
+    link.download = 'hadi-vpn-qrcode.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+});
+
+// ---------- fetch ----------
+async function loadFromServer(idOrUrl){
+    let url = idOrUrl;
+    if(!/^https?:\/\//i.test(idOrUrl)){
+        const cleanId = idOrUrl.replace(/^\/+/, '').replace(/^(sub|rawsub|view)\//,'');
+        url = '/rawsub/' + cleanId;
+    }
+    let absoluteUrl = url;
+    try{ absoluteUrl = new URL(url, window.location.origin).href; }catch(e){}
+    window.__subUrl = absoluteUrl;
+
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('fetch failed');
+    renderUsageInfo(res.headers.get('subscription-userinfo'));
+    const raw = await res.text();
+    let decoded = raw;
+    if(!/:\/\//.test(raw)){
+        decoded = b64decode(raw);
+    }
+    window.__rawSub = decoded;
+    renderEntries(decoded);
+    renderQRCode(absoluteUrl);
+}
+
+// ---------- dropdowns ----------
+function setupDropdown(btnId, menuId){
+    const btn = document.getElementById(btnId);
+    const menu = document.getElementById(menuId);
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.querySelectorAll('.dropdown-menu.open').forEach(m => { if(m !== menu) m.classList.remove('open'); });
+        menu.classList.toggle('open');
+    });
+    document.addEventListener('click', () => menu.classList.remove('open'));
+    menu.addEventListener('click', (e) => e.stopPropagation());
+}
+setupDropdown('langBtn','langMenu');
+setupDropdown('themeBtn','themeMenu');
+
+document.getElementById('langMenu').querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+        document.getElementById('langMenu').classList.remove('open');
+        if(item.dataset.lang === 'en'){ toast('نسخه انگلیسی به‌زودی اضافه می‌شود'); }
+    });
+});
+
+const themeIcon = document.getElementById('themeIcon');
+const themeLabel = document.getElementById('themeLabel');
+function setTheme(mode){
+    document.documentElement.classList.toggle('light', mode === 'light');
+    themeIcon.className = mode === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+    themeLabel.textContent = mode === 'light' ? 'حالت روشن' : 'حالت تاریک';
+    try{ localStorage.setItem('hadi-vpn-theme', mode); }catch(e){}
+}
+document.getElementById('themeMenu').querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+        document.getElementById('themeMenu').classList.remove('open');
+        setTheme(item.dataset.theme);
+    });
+});
+(function initTheme(){
+    let saved = 'dark';
+    try{ saved = localStorage.getItem('hadi-vpn-theme') || 'dark'; }catch(e){}
+    setTheme(saved);
+})();
+
+// ---------- init ----------
+(function init(){
+    const params = new URLSearchParams(window.location.search);
+    let presetSub = params.get('sub') || params.get('id');
+    if(!presetSub){
+        const m = window.location.pathname.match(/\/sub\/([^\/?#]+)/);
+        if(m) presetSub = m[1];
+    }
+    if(presetSub){
+        setStatus('در حال دریافت اطلاعات اشتراک...');
+        setBadge('loading', 'در حال بررسی');
+        loadFromServer(presetSub).catch(() => {
+            setStatus('دریافت اطلاعات اشتراک ناموفق بود. لینک رو دوباره امتحان کن یا با پشتیبانی تماس بگیر.');
+            setBadge('error', 'ناموفق');
+        });
+    } else {
+        setStatus('این لینک معتبر نیست یا شناسه‌ی اشتراک توش نبود.');
+        setBadge('error', 'نامعتبر');
+    }
+})();
+</script>
+</body>
+</html>
